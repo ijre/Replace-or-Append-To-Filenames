@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 using Microsoft.WindowsAPICodePack;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using Microsoft.WindowsAPICodePack.Shell;
 
 namespace Replace_or_Append_To_Filenames
@@ -142,7 +143,22 @@ namespace Replace_or_Append_To_Filenames
 
             if (UseDirectory == DialogResult.Yes)
             {
-                // TODO: download Microsoft.WindowsAPICodePack.Shell from NuGet, use CommonOpenFileDialog
+                using CommonOpenFileDialog diag = new CommonOpenFileDialog()
+                {
+                    Title = "Select Folder",
+                    IsFolderPicker = true,
+                    RestoreDirectory = true,
+                    InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString()
+                };
+                diag.ShowDialog();
+                if (string.IsNullOrWhiteSpace(diag.FileName))
+                    return;
+
+                files = Directory.GetFiles(diag.FileName);
+                paths = Directory.GetFiles(diag.FileName);
+
+                for (int i = 0; i < files.Length; i++)
+                    files[i] = files[i].Substring(files[i].LastIndexOf("\\") + 1);
             }
             else if (UseDirectory == DialogResult.No)
             {
@@ -155,13 +171,12 @@ namespace Replace_or_Append_To_Filenames
                     InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString()
                 };
                 diag.ShowDialog();
+                if (string.IsNullOrWhiteSpace(diag.FileName))
+                    return;
 
                 files = diag.SafeFileNames;
                 paths = diag.FileNames;
             }
-
-            if (files.Length == 0)
-                return;
 
             for (int i = 0; i < files.Length; i++)
             {
