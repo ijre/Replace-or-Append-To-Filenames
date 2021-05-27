@@ -242,7 +242,13 @@ namespace Replace_or_Append_To_Filenames
           }
           case Choices.RemoveBefore:
           {
-            files[i] = files[i].Remove(0, files[i].IndexOf(StringToWorkWith.Text));
+            try
+            {
+              files[i] = files[i].Remove(0, files[i].IndexOf(StringToWorkWith.Text));
+            }
+            catch (ArgumentOutOfRangeException)
+            { }
+
             break;
           }
         }
